@@ -14,7 +14,7 @@ library(adabag)
 
 ```{r defining_functions}
 get.f1.measure <- function(model, weka_matrix = F){
-  if(weka_matrix){
+  if(weka_matrix == T){
     confusion_matrix <- t(model$confusionMatrix)
   }else{
     confusion_matrix <- as.matrix(confusionMatrix(model)$table)
@@ -49,6 +49,8 @@ names(sonar)[61] <- "label"
 
 ##2
 Training C4.5 Classifier usnig J48 from Weka, without tuning paramters
+
+Note: All the cross validation functions used implement stratified cross validation scheme, where the variability in the data across the labels, is maintained in the created folds
 ```{r J48_1}
 #Using J48 function
   mdl.tst1 <- J48(label ~ ., data = sonar)
@@ -85,7 +87,7 @@ ctr <- trainControl(method="repeatedcv",
                     summaryFunction = twoClassSummary)
 
 mdl.c45 <- c.train(sonar, "J48",ctr)
-get.f1.measure(confusionMatrix(mdl.c45))
+get.f1.measure(mdl.c45)
 ```
 
 
