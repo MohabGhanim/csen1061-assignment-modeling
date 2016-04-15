@@ -38,6 +38,8 @@ c.train <- function(.data, .method, .trControl ){
                  metric="ROC",
                  trControl=.trControl)
 }
+
+
 ```
 ##1
 Reading Data and renaming label
@@ -110,15 +112,21 @@ get.f1.measure(mdl.rf)
 ```
 
 Trying a simple neural network
-```{r nnet}
+```{r nnet,results="hide",message=FALSE}
 mdl.nnet <- c.train(sonar, "nnet", ctr)
-get.f1.measure(mdl.nnet)  
+```
+
+```{r}
+print(get.f1.measure(mdl.nnet))  
 ```
 
 Trying a neural network with dimensionality reduction
-```{r pcaNNet}
+```{r pcaNNet,results="hide",message=FALSE}
 mdl.nnetPCA <- c.train(sonar, "pcaNNet", ctr)
-get.f1.measure(mdl.nnetPCA)
+```
+
+```{r}
+print(get.f1.measure(mdl.nnetPCA))
 ```
 
 ##3
