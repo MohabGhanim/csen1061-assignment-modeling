@@ -35,9 +35,16 @@ c.train <- function(.data, .method, .trControl ){
                  data = .data,
                  method=.method,
                  preProc=c("center","scale"),
-                 metric="ROC",
                  trControl=.trControl)
 }
+
+ctr <- trainControl(method="repeatedcv",
+                    repeats = 5, 
+                    classProbs = TRUE,
+                    summaryFunction = twoClassSummary)
+
+ctr2 <- trainControl(method="repeatedcv",
+                    repeats = 10)
 
 
 ```
@@ -83,11 +90,6 @@ confusionMatrix(t2)
 
 Now, we will try evaluating the model using cross validation, we will use the cross validation utitlity from the caret package instead of weka package, since it has the option to repear the process of cross validation using differnet folds, and is more descriptive in terms of performances metrics such as sensitivity, specificity, pos pred value, and neg pred value
 ```{r cross_validation}
-ctr <- trainControl(method="repeatedcv",
-                    repeats = 5, 
-                    classProbs = TRUE,
-                    summaryFunction = twoClassSummary)
-
 mdl.c45 <- c.train(sonar, "J48",ctr)
 get.f1.measure(mdl.c45)
 ```
@@ -144,3 +146,48 @@ get.f1.measure(ev.bst, weka_matrix = T)
 ```
 
 ##4
+Loading Hepatitis Package
+```{r loading_hepatits}
+hep <- read.csv("hepatitis.csv", header = F, na.strings = "?")
+hep <- hep[sample(nrow(hep)),]
+names(hep)[1] <- "label"
+hep$label <- factor(hep$label)
+```
+
+Loading and Merging spect
+```{r loading_spect}
+spect.1 <- read.csv("spect_train.csv", header=F)
+spect.2 <- read.csv("spect_test.csv", header=F)
+spect <- rbind(spect.1,spect.2)
+spect <- spect[sample(nrow(spect)),]
+names(spect)[1] <- "label"
+spect$label <- factor(spect$label)
+```
+
+Loading pima
+```{r loading_pima}
+pima <- read.csv("pima.csv", header = F)
+pima <- pima[sample(nrow(pima)),]
+names(pima)[9] = "label"
+pima$label <- factor(pima$label)
+```
+
+
+Creating Matrix
+```{r creating_matrix}
+#algorithms <- c("J48", "svmRadial", "nb", "rf", "nnet", "pcaNNet", "AdaBoost.M1")
+datasets <- list(hep,pima,spect)
+res.mat <- matrix(nrow = length(datasets), ncol=length(algorithms))
+colnames(res.mat) <- algorithms
+rownames(res.mat) <- c("hep","pima","spect")
+for(d in 1:length(datasets)){
+  dataset <- datasets[[d]]
+  a <- 1
+  for(algorithm in algorithms){
+    mdl <- c.train(dataset, algorithm,ctr2)
+    f1 <- get.f1.measure(mdl)
+    res.mat[d,a] = f1
+    a <- a+1
+  }
+}
+```
