@@ -144,6 +144,7 @@ bst <- AdaBoostM1(label~., sonar, control = Weka_control(W="J48"))
 ev.bst <- evaluate_Weka_classifier(bst, numFolds= 10)
 get.f1.measure(ev.bst, weka_matrix = T)
 ```
+There was no significant improvement for bagging and boosting over the other algorithms
 
 ##4
 Loading Hepatitis Package
@@ -173,9 +174,9 @@ pima$label <- factor(pima$label)
 ```
 
 
-Creating Matrix
+Creating dataset-Algorithm Matrix
 ```{r creating_matrix}
-#algorithms <- c("J48", "svmRadial", "nb", "rf", "nnet", "pcaNNet", "AdaBoost.M1")
+algorithms <- c("J48", "svmRadial", "nb", "rf", "nnet", "pcaNNet")
 datasets <- list(hep,pima,spect)
 res.mat <- matrix(nrow = length(datasets), ncol=length(algorithms))
 colnames(res.mat) <- algorithms
@@ -188,6 +189,7 @@ for(d in 1:length(datasets)){
     f1 <- get.f1.measure(mdl)
     res.mat[d,a] = f1
     a <- a+1
+      print(paste0("D:", d, " ", "A:", a))
   }
 }
 ```
